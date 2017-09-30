@@ -66,8 +66,8 @@ public class GetRawData extends AsyncTask<String, Void, String> {
 
             StringBuilder result = new StringBuilder();
 
-            //constructs raw JSON String
-            for (String line = reader.readLine(); line != null; reader.readLine()) {
+            //constructs String containing raw JSON data
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 result.append(line).append("\n");
             }
 

@@ -50,11 +50,11 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
             for(int i = 0; i < itemsArray.length(); i++){
                 JSONObject jsonPhoto = itemsArray.getJSONObject(i).getJSONObject("data");
                 String title = jsonPhoto.getString("title");
-                String permalink = jsonPhoto.getString("permalnk");
+                String permalink = jsonPhoto.getString("permalink");
                 String url = jsonPhoto.getString("url");
                 int score = jsonPhoto.getInt("ups");
                 mPhotoList.add(new Photo(title, score, permalink, url));
-                Log.d(TAG, "onDownloadComplete: " + mPhotoList.get(i).toString());
+                Log.d(TAG, "onDownloadComplete: " + i + " " + mPhotoList.get(i).toString());
             }
 
 //            JSONArray itemsArray = jsonData.getJSONArray("items");
@@ -63,13 +63,15 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
 //                JSONObject jsonPhoto = itemsArray.getJSONObject(i);
 //
 //            }
-
-
         }catch(JSONException e){
             e.printStackTrace();
             Log.e(TAG, "onDownloadComplete: Error processing JSON data " +e.getMessage() );
             status = DownloadStatus.FAILED_OR_EMPTY;
         }
         Log.e(TAG, "onDownloadComplete: ends");
+    }
+
+    @Override
+    protected void onPostExecute(List<Photo> photos) {
     }
 }

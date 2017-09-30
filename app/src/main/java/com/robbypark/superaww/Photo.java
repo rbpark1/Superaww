@@ -52,6 +52,6 @@ public class Photo {
 
     @Override
     public String toString(){
-        return mTitle + ", " + mScore + ", " + mPermalink + " " + mUrl;
+        return mTitle + ", " + mScore + ", " + mPermalink + ", " + mUrl;
     }
 }
