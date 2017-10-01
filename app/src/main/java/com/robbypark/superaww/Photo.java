@@ -12,14 +12,12 @@ public class Photo {
     private int mScore;
     private String mPermalink;
     private String mUrl;
-    private Drawable mImage;
 
     public Photo(String title, int score, String permalink, String url) {
         mTitle = title;
         mScore = score;
         mPermalink = permalink;
         mUrl = url;
-        mImage = null;
     }
 
     public String getTitle() {
@@ -54,16 +52,8 @@ public class Photo {
         mUrl = url;
     }
 
-    public Drawable getImage() {
-        return mImage;
-    }
-
-    public void setImage(Drawable image) {
-        mImage = image;
-    }
-
     @Override
-    public String toString(){
+    public String toString() {
         return mTitle + ", " + mScore + ", " + mPermalink + ", " + mUrl;
     }
 }

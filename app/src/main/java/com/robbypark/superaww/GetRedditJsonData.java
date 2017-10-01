@@ -1,6 +1,5 @@
 package com.robbypark.superaww;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -8,10 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,31 +55,22 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
             JSONArray itemsArray = jsonData.getJSONArray("children");
             for (int i = 0; i < itemsArray.length(); i++) {
                 JSONObject jsonPhoto = itemsArray.getJSONObject(i).getJSONObject("data");
+
                 String title = jsonPhoto.getString("title");
                 String permalink = jsonPhoto.getString("permalink");
                 String url = jsonPhoto.getString("url");
                 int score = jsonPhoto.getInt("ups");
-                mPhotoList.add(new Photo(title, score, permalink, url));
-                Log.d(TAG, "onDownloadComplete: " + i + " " + mPhotoList.get(i).toString());
-//
-//                InputStream is = (InputStream) new URL(url).getContent();
-//                Drawable d = Drawable.createFromStream(is, "src name");//src name?
-//                mPhotoList.get(i).setImage(d);
+
+                if((url.contains("imgur") || url.contains("i.redd.it")) && url.contains(".jpg")){
+                    mPhotoList.add(new Photo(title, score, permalink, url));
+                    Log.d(TAG, "onDownloadComplete: " + i + " " + mPhotoList.get(mPhotoList.size()-1).toString());
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
             Log.e(TAG, "onDownloadComplete: Error processing JSON data " + e.getMessage());
             mStatus = DownloadStatus.FAILED_OR_EMPTY;
         }
-//        catch(MalformedURLException e){
-//            e.printStackTrace();
-//            Log.e(TAG, "onDownloadComplete: Error processing URL " + e.getMessage());
-//            mStatus = DownloadStatus.FAILED_OR_EMPTY;
-//        } catch(IOException e){
-//            e.printStackTrace();
-//            Log.e(TAG, "onDownloadComplete: IO error " + e.getMessage());
-//            mStatus = DownloadStatus.FAILED_OR_EMPTY;
-//        }
         Log.e(TAG, "onDownloadComplete: ends");
     }
 
