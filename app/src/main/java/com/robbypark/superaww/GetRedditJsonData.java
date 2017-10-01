@@ -1,5 +1,6 @@
 package com.robbypark.superaww;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -7,6 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +23,19 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
 
     private static final String TAG = "GetRedditJsonData";
 
+    public interface OnDataAvailable {
+        void onDataAvailable(DownloadStatus status, List<Photo> photos);
+    }
 
     private List<Photo> mPhotoList = null;
     private String mBaseUrl;
+    private OnDataAvailable mCallback;
+    private DownloadStatus mStatus;
 
-    public GetRedditJsonData(String baseUrl) {
+    public GetRedditJsonData(OnDataAvailable callback, String baseUrl) {
         Log.d(TAG, "GetRedditJsonData: called");
         mBaseUrl = baseUrl;
+        mCallback = callback;
     }
 
     @Override
@@ -37,17 +48,17 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
     }
 
     @Override
-    public void onDownloadComplete(String data, DownloadStatus status){
+    public void onDownloadComplete(String data, DownloadStatus status) {
         Log.d(TAG, "onDownloadComplete: started. Status = " + status);
-
-        if(status == DownloadStatus.OK){
+        mStatus = status;
+        if (status == DownloadStatus.OK) {
             mPhotoList = new ArrayList<>();
         }
-        try{
-            JSONObject jsonRoot =  new JSONObject(data);
+        try {
+            JSONObject jsonRoot = new JSONObject(data);
             JSONObject jsonData = jsonRoot.getJSONObject("data");
             JSONArray itemsArray = jsonData.getJSONArray("children");
-            for(int i = 0; i < itemsArray.length(); i++){
+            for (int i = 0; i < itemsArray.length(); i++) {
                 JSONObject jsonPhoto = itemsArray.getJSONObject(i).getJSONObject("data");
                 String title = jsonPhoto.getString("title");
                 String permalink = jsonPhoto.getString("permalink");
@@ -55,23 +66,32 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
                 int score = jsonPhoto.getInt("ups");
                 mPhotoList.add(new Photo(title, score, permalink, url));
                 Log.d(TAG, "onDownloadComplete: " + i + " " + mPhotoList.get(i).toString());
+//
+//                InputStream is = (InputStream) new URL(url).getContent();
+//                Drawable d = Drawable.createFromStream(is, "src name");//src name?
+//                mPhotoList.get(i).setImage(d);
             }
-
-//            JSONArray itemsArray = jsonData.getJSONArray("items");
-//
-//            for(int i = 0; i < itemsArray.length(); i++){
-//                JSONObject jsonPhoto = itemsArray.getJSONObject(i);
-//
-//            }
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
-            Log.e(TAG, "onDownloadComplete: Error processing JSON data " +e.getMessage() );
-            status = DownloadStatus.FAILED_OR_EMPTY;
+            Log.e(TAG, "onDownloadComplete: Error processing JSON data " + e.getMessage());
+            mStatus = DownloadStatus.FAILED_OR_EMPTY;
         }
+//        catch(MalformedURLException e){
+//            e.printStackTrace();
+//            Log.e(TAG, "onDownloadComplete: Error processing URL " + e.getMessage());
+//            mStatus = DownloadStatus.FAILED_OR_EMPTY;
+//        } catch(IOException e){
+//            e.printStackTrace();
+//            Log.e(TAG, "onDownloadComplete: IO error " + e.getMessage());
+//            mStatus = DownloadStatus.FAILED_OR_EMPTY;
+//        }
         Log.e(TAG, "onDownloadComplete: ends");
     }
 
     @Override
     protected void onPostExecute(List<Photo> photos) {
+        if (mStatus == DownloadStatus.OK && photos != null) {
+            mCallback.onDataAvailable(mStatus, photos);
+        }
     }
 }

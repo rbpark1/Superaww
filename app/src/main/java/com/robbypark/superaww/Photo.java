@@ -1,5 +1,7 @@
 package com.robbypark.superaww;
 
+import android.graphics.drawable.Drawable;
+
 /**
  * Created by Robby on 9/30/2017.
  */
@@ -10,12 +12,14 @@ public class Photo {
     private int mScore;
     private String mPermalink;
     private String mUrl;
+    private Drawable mImage;
 
     public Photo(String title, int score, String permalink, String url) {
         mTitle = title;
         mScore = score;
         mPermalink = permalink;
         mUrl = url;
+        mImage = null;
     }
 
     public String getTitle() {
@@ -48,6 +52,14 @@ public class Photo {
 
     public void setUrl(String url) {
         mUrl = url;
+    }
+
+    public Drawable getImage() {
+        return mImage;
+    }
+
+    public void setImage(Drawable image) {
+        mImage = image;
     }
 
     @Override
