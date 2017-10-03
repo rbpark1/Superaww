@@ -1,6 +1,7 @@
 package com.robbypark.superaww;
 
 import android.graphics.drawable.Drawable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +15,8 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
     private static final String TAG = "MainActivity";
 
     private ImageView mImageView;
-    private Button mButton;
+    private Button mBtnNext;
+    private Button mBtnOut;
     private List<Photo> mPhotoList;
     private String mAfter = "";
     private int count = 0;
@@ -25,8 +27,8 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mButton = (Button) findViewById(R.id.btnNext);
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mBtnNext = (Button) findViewById(R.id.btnNext);
+        mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mPhotoList.isEmpty()){
@@ -43,8 +45,22 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
                 }
             }
         });
+
+        mBtnOut = (Button) findViewById(R.id.btnOut);
+        mBtnOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                builder.setMessage("test message");
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
         mImageView = (ImageView) findViewById(R.id.imageView);
     }
+
+
 
     @Override
     protected void onResume() {
