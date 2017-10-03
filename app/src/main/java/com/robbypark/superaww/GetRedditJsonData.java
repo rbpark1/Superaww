@@ -19,18 +19,20 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
     private static final String TAG = "GetRedditJsonData";
 
     public interface OnDataAvailable {
-        void onDataAvailable(DownloadStatus status, List<Photo> photos);
+        void onDataAvailable(DownloadStatus status, List<Photo> photos, String after);
     }
 
     private List<Photo> mPhotoList = null;
+    private String mAfter;
     private String mBaseUrl;
     private OnDataAvailable mCallback;
     private DownloadStatus mStatus;
 
-    public GetRedditJsonData(OnDataAvailable callback, String baseUrl) {
+    public GetRedditJsonData(OnDataAvailable callback, String baseUrl, String after) {
         Log.d(TAG, "GetRedditJsonData: called");
         mBaseUrl = baseUrl;
         mCallback = callback;
+        mAfter = after;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
         Log.d(TAG, "doInBackground: starts");
         GetRawData getRawData = new GetRawData(this);
         //because getRawData is being called from an async task, run on same thread
-        getRawData.runInSameThread(mBaseUrl);
+        getRawData.runInSameThread(mBaseUrl, mAfter);
         return mPhotoList;
     }
 
@@ -52,6 +54,8 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
         try {
             JSONObject jsonRoot = new JSONObject(data);
             JSONObject jsonData = jsonRoot.getJSONObject("data");
+            mAfter = jsonData.getString("after");
+            Log.d(TAG, "onDownloadComplete: after = " + mAfter);
             JSONArray itemsArray = jsonData.getJSONArray("children");
             for (int i = 0; i < itemsArray.length(); i++) {
                 JSONObject jsonPhoto = itemsArray.getJSONObject(i).getJSONObject("data");
@@ -71,13 +75,13 @@ public class GetRedditJsonData extends AsyncTask<String, Void, List<Photo>> impl
             Log.e(TAG, "onDownloadComplete: Error processing JSON data " + e.getMessage());
             mStatus = DownloadStatus.FAILED_OR_EMPTY;
         }
-        Log.e(TAG, "onDownloadComplete: ends");
+        Log.d(TAG, "onDownloadComplete: ends");
     }
 
     @Override
     protected void onPostExecute(List<Photo> photos) {
         if (mStatus == DownloadStatus.OK && photos != null) {
-            mCallback.onDataAvailable(mStatus, photos);
+            mCallback.onDataAvailable(mStatus, photos, mAfter);
         }
     }
 }

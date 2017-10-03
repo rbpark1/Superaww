@@ -1,7 +1,6 @@
 package com.robbypark.superaww;
 
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,8 +15,8 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
 
     private ImageView mImageView;
     private Button mButton;
-    private DownloadStatus mStatus;
     private List<Photo> mPhotoList;
+    private String mAfter = "";
     private int count = 0;
     private MainActivity mActivity = this;
 
@@ -37,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
                         DownloadImage downloadImage = new DownloadImage(mActivity);
                         downloadImage.execute(mPhotoList.get(count).getUrl());
                     } else {
-                        //get new entries
+                        GetRedditJsonData getRedditJsonData = new GetRedditJsonData(mActivity, "https://www.reddit.com/user/316nuts/m/superaww/.json", mAfter);
+                        getRedditJsonData.execute();
                     }
 
                 }
@@ -50,16 +50,17 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
     protected void onResume() {
         Log.d(TAG, "onResume: starts");
         super.onResume();
-        GetRedditJsonData getRedditJsonData = new GetRedditJsonData(this, "https://www.reddit.com/user/316nuts/m/superaww/.json");
+        GetRedditJsonData getRedditJsonData = new GetRedditJsonData(this, "https://www.reddit.com/user/316nuts/m/superaww/.json", mAfter);
         getRedditJsonData.execute();
         Log.d(TAG, "onResume: ends");
     }
 
 
     @Override
-    public void onDataAvailable(DownloadStatus status, List<Photo> photos) {
+    public void onDataAvailable(DownloadStatus status, List<Photo> photos, String after) {
         Log.d(TAG, "onDataAvailable: starts");
         mPhotoList = photos;
+        mAfter = after;
         DownloadImage downloadImage = new DownloadImage(this);
         downloadImage.execute(mPhotoList.get(0).getUrl());
         Log.d(TAG, "onDataAvailable: ends");

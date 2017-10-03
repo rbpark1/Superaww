@@ -29,15 +29,17 @@ public class GetRawData extends AsyncTask<String, Void, String> {
 
     private DownloadStatus mDownloadStatus;
     private final OnDownloadComplete mCallback;
+    private String mAfter;
 
     public GetRawData(OnDownloadComplete callback) {
         mDownloadStatus = DownloadStatus.IDLE;
         mCallback = callback;
     }
     
-    public void runInSameThread(String s){
+    public void runInSameThread(String s, String after){
         Log.d(TAG, "runInSameThread: starts");
         if(mCallback != null){
+            mAfter = after;
             mCallback.onDownloadComplete(doInBackground(s), mDownloadStatus);
         }
         Log.d(TAG, "runInSameThread: ends");
@@ -54,7 +56,8 @@ public class GetRawData extends AsyncTask<String, Void, String> {
 
         try {
             mDownloadStatus = DownloadStatus.PROCESSING;
-            URL url = new URL(params[0]);
+            Log.d(TAG, "doInBackground: " + params[0] + "?after=" + mAfter);
+            URL url = new URL(params[0] + "?after=" + mAfter);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
