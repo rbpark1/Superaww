@@ -4,6 +4,8 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -51,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-                builder.setMessage("test message");
+//                String urlString = "https://www.reddit.com" + mPhotoList.get(count).getPermalink();
+                builder.setMessage(mPhotoList.get(count-1).getTitle() + "\n" + mPhotoList.get(count-1).getScore() + " upvotes" + "\n");
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
