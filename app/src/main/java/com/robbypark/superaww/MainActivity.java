@@ -1,15 +1,21 @@
 package com.robbypark.superaww;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -52,11 +58,22 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
         mBtnOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-//                String urlString = "https://www.reddit.com" + mPhotoList.get(count).getPermalink();
-                builder.setMessage(mPhotoList.get(count-1).getTitle() + "\n" + mPhotoList.get(count-1).getScore() + " upvotes" + "\n");
-                AlertDialog dialog = builder.create();
-                dialog.show();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+//                builder.setView(R.layout.info_dialog);
+//
+//                TextView titleTv = (TextView) findViewById(R.id.titleTv);
+//                titleTv.setText(mPhotoList.get(count-1).getTitle());
+//
+//                TextView upvoteTv = (TextView) findViewById(R.id.upvoteTv);
+//                upvoteTv.setText(mPhotoList.get(count-1).getScore());
+//
+//                TextView linkTv = (TextView) findViewById(R.id.linkTv);
+                String urlString = "https://www.reddit.com" + mPhotoList.get(count-1).getPermalink();
+//                linkTv.setText(urlString);
+
+//                builder.setMessage(mPhotoList.get(count-1).getTitle() + "\n" + mPhotoList.get(count-1).getScore() + " upvotes" + "\n");
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
             }
         });
 
@@ -93,3 +110,4 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
         Log.d(TAG, "onImageAvailable: ends");
     }
 }
+
