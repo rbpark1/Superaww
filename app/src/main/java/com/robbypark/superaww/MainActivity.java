@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.github.chrisbanes.photoview.PhotoView;
 
@@ -22,16 +22,21 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
     private PhotoView mPhotoView;
     private Button mBtnNext;
     private Button mBtnOut;
+    private ProgressBar mProgressBar;
+
     private List<Photo> mPhotoList;
     private String mAfter = "";
     private int count = 0;
     private MainActivity mActivity = this;
     private boolean isLoading = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mBtnNext = (Button) findViewById(R.id.btnNext);
         mBtnNext.setOnClickListener(new View.OnClickListener() {
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
                         DownloadImage downloadImage = new DownloadImage(mActivity);//download/load image into photoview
                         downloadImage.execute(mPhotoList.get(count).getUrl());
                         isLoading = true;
+                        toggleProgressBar();
                     } else {//all photos in array have been viewed, get new data using after
                         GetRedditJsonData getRedditJsonData = new GetRedditJsonData(mActivity, "https://www.reddit.com/user/316nuts/m/superaww/.json", mAfter);
                         getRedditJsonData.execute();
@@ -77,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
     }
 
 
-
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume: starts");
@@ -96,8 +101,10 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
         DownloadImage downloadImage = new DownloadImage(this);
         downloadImage.execute(mPhotoList.get(0).getUrl());
         isLoading = true;
+        toggleProgressBar();
         Log.d(TAG, "onDataAvailable: ends");
     }
+
 
     @Override
     public void onImageAvailable(Drawable drawable) {
@@ -105,7 +112,16 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
         mPhotoView.setImageDrawable(drawable);
         count++;
         isLoading = false;
+        toggleProgressBar();
         Log.d(TAG, "onImageAvailable: ends");
+    }
+
+    private void toggleProgressBar(){
+        if(isLoading){//loading in progress, show progress bar
+            mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        } else {
+            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        }
     }
 }
 
