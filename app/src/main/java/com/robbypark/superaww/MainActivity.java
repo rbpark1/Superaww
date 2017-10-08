@@ -12,18 +12,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.github.chrisbanes.photoview.PhotoView;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GetRedditJsonData.OnDataAvailable, DownloadImage.OnImageAvailable {
     private static final String TAG = "MainActivity";
 
-    private ImageView mImageView;
+    private PhotoView mPhotoView;
     private Button mBtnNext;
     private Button mBtnOut;
     private List<Photo> mPhotoList;
     private String mAfter = "";
     private int count = 0;
     private MainActivity mActivity = this;
+    private boolean isLoading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +37,17 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
         mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mPhotoList.isEmpty()){
+                if(mPhotoList.isEmpty() || isLoading){
                     //do nothing
                 } else {
-                    if(count < mPhotoList.size()){
-                        DownloadImage downloadImage = new DownloadImage(mActivity);
+                    if(count < mPhotoList.size()){//if there are still unviewed photos in the array
+                        DownloadImage downloadImage = new DownloadImage(mActivity);//download/load image into photoview
                         downloadImage.execute(mPhotoList.get(count).getUrl());
-                    } else {
+                        isLoading = true;
+                    } else {//all photos in array have been viewed, get new data using after
                         GetRedditJsonData getRedditJsonData = new GetRedditJsonData(mActivity, "https://www.reddit.com/user/316nuts/m/superaww/.json", mAfter);
                         getRedditJsonData.execute();
+                        count = 0;
                     }
 
                 }
@@ -68,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
             }
         });
 
-        mImageView = (ImageView) findViewById(R.id.imageView);
+        mPhotoView = (PhotoView) findViewById(R.id.imageView);
     }
 
 
@@ -90,14 +95,16 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
         mAfter = after;
         DownloadImage downloadImage = new DownloadImage(this);
         downloadImage.execute(mPhotoList.get(0).getUrl());
+        isLoading = true;
         Log.d(TAG, "onDataAvailable: ends");
     }
 
     @Override
     public void onImageAvailable(Drawable drawable) {
         Log.d(TAG, "onImageAvailable: starts");
-        mImageView.setImageDrawable(drawable);
+        mPhotoView.setImageDrawable(drawable);
         count++;
+        isLoading = false;
         Log.d(TAG, "onImageAvailable: ends");
     }
 }
