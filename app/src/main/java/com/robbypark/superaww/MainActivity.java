@@ -92,6 +92,11 @@ public class MainActivity extends AppCompatActivity implements GetRedditJsonData
         Log.d(TAG, "onResume: ends");
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Bundle bundle = new Bundle();//TODO: save state on rotation / hold position for 24 hours
+    }
 
     @Override
     public void onDataAvailable(DownloadStatus status, List<Photo> photos, String after) {
